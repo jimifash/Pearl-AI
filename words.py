@@ -1,0 +1,22 @@
+words = {
+    "quick": ["fast", "rapid", "swift", "speedy", "hasty", "prompt", "expeditious", "nimble", "brisk", "fleet"],
+    "bright": ["luminous", "shiny", "radiant", "vivid", "brilliant", "glowing", "gleaming", "sparkling", "dazzling", "vibrant"],
+    "difficult": ["hard", "challenging", "tough", "arduous", "complicated", "complex", "strenuous", "formidable", "demanding", "tricky"],
+    "beautiful": ["pretty", "attractive", "lovely", "gorgeous", "stunning", "handsome", "exquisite", "charming", "elegant", "radiant"],
+    "angry": ["mad", "irate", "furious", "enraged", "irritated", "infuriated", "fuming", "livid", "wrathful", "outraged"],
+    "lazy": ["idle", "sluggish", "inactive", "lethargic", "apathetic", "dormant", "indolent", "listless", "slothful", "unmotivated"],
+    "happy": ["joyful", "content", "pleased", "cheerful", "delighted", "ecstatic", "satisfied", "elated", "blissful", "jovial"],
+    "small": ["tiny", "petite", "mini", "minute", "microscopic", "compact", "slight", "modest", "little", "miniature"],
+    "large": ["huge", "big", "gigantic", "massive", "immense", "colossal", "vast", "enormous", "grand", "tremendous"],
+    "smart": ["intelligent", "clever", "bright", "sharp", "brilliant", "wise", "astute", "quick-witted", "ingenious", "knowledgeable"],
+    "cold": ["chilly", "cool", "freezing", "icy", "frigid", "glacial", "nippy", "wintry", "crisp", "polar"],
+    "warm": ["hot", "toasty", "comfortable", "balmy", "pleasant", "humid", "cozy", "lukewarm", "mild", "temperate"],
+    "strong": ["sturdy", "powerful", "robust", "tough", "solid", "muscular", "resilient", "vigorous", "stalwart", "forceful"],
+    "weak": ["frail", "fragile", "delicate", "feeble", "brittle", "fragile", "infirm", "powerless", "vulnerable", "unsteady"],
+    "funny": ["humorous", "comical", "amusing", "hilarious", "witty", "jovial", "laughable", "entertaining", "fun", "lighthearted"],
+    "sad": ["unhappy", "sorrowful", "downcast", "mournful", "despondent", "depressed", "blue", "melancholy", "glum", "disheartened"],
+    "clean": ["tidy", "neat", "spotless", "pristine", "orderly", "immaculate", "organized", "uncluttered", "polished", "sanitary"],
+    "dirty": ["filthy", "grimy", "messy", "soiled", "unclean", "muddy", "stained", "polluted", "sullied", "contaminated"],
+    "brave": ["courageous", "valiant", "fearless", "gallant", "heroic", "bold", "intrepid", "daring", "audacious", "undaunted"],
+    "calm": ["peaceful", "serene", "relaxed", "tranquil", "composed", "collected", "placid", "unruffled", "even-tempered", "cool-headed"]
+}
