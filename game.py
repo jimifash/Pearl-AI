@@ -29,3 +29,6 @@ def synonym_game():
             print("Correct! Well done!")
         else:
             print(f"Oops! Some correct answers could be: {', '.join(words[word])}. Try again!")
+
+
+

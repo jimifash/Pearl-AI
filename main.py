@@ -1,34 +1,45 @@
-from client_process import get_response
-from game import synonym_game
-
-
+import streamlit as st
+from client_process import get_response  # Ensure you have this function available
+from game import synonym_game  # Ensure this game function is available
 
 def main():
-    print("Welcome to the English Learning Chatbot!")
-    print("Type 'exit' to end the conversation.\n")
+    st.title("English Learning Chatbot")
+    st.write("Welcome to the chatbot! Type 'exit' to end the conversation.")
+    
+    # Initialize chat history in session state
+    if 'chat_history' not in st.session_state:
+        st.session_state.chat_history = []
 
-    choice = input("Would you like to play a game or just chat? \nType 'game' to play \nType 'chat' to just chat: ").strip().lower()
+    # User chooses between chat or game
+    choice = st.selectbox(
+        "Would you like to play a game or just chat?", 
+        ['game', 'chat']
+    )
 
+    # If user selects 'game'
     if choice == 'game':
-        synonym_game()
+        st.write("Let's play the synonym game!")
+        synonym_game()  # Ensure the game is interactive and doesn't block the UI
 
+    # If user selects 'chat'
     elif choice == 'chat':
-        print("\nYou are now in chat mode! Type 'exit' to end the chat.\n")
-        print("\nI am Pearl your personal AI english tutor")
-        print("Please be specific with questions to enable me respond accordingly")
-        while True:
-            user_input = input("You: ").strip()
-
-            if user_input.lower() == 'exit':
-                print("Goodbye!")
-                break
-
-            # Get response from the bot
-            bot_response = get_response(user_input)
-            print(f"Bot: {bot_response.content}")
-
-    else:
-        print("Invalid choice. Please restart and type 'game' or 'chat'.")
+        st.write("\nYou are now in chat mode! Type 'exit' to end the chat.")
+        st.write("I am Pearl, your personal AI English tutor! Please be specific with questions to enable me to respond accordingly.")
+        
+        user_input = st.text_input("You:", "")
+        
+        if user_input.lower() == 'exit':
+            st.write("Goodbye!")
+            st.session_state.chat_history = []  # Clear chat history when exit
+        elif user_input:
+            # Append user input and bot response to chat history
+            st.session_state.chat_history.append(f"You: {user_input}")
+            bot_response = get_response(user_input)  # Your chatbot logic here
+            st.session_state.chat_history.append(f"Bot: {bot_response.content}")
+        
+    # Display chat history
+    for message in st.session_state.chat_history:
+        st.write(message)
 
 if __name__ == "__main__":
     main()
