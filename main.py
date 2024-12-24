@@ -1,6 +1,8 @@
 import streamlit as st
-from client_process import get_response  # Ensure you have this function available
-from game import synonym_game  # Ensure this game function is available
+from client_process import get_response
+from game import synonym_game  
+from translate_input import trans_text 
+
 
 def main():
     st.title("English Learning Chatbot")
@@ -21,25 +23,31 @@ def main():
         st.write("Let's play the synonym game!")
         synonym_game()  # Ensure the game is interactive and doesn't block the UI
 
+
     # If user selects 'chat'
     elif choice == 'chat':
-        st.write("\nYou are now in chat mode! Type 'exit' to end the chat.")
-        st.write("I am Pearl, your personal AI English tutor! Please be specific with questions to enable me to respond accordingly.")
+        #Initialize preferred language
+        lang = st.text_input("Enter your preferred language (e.g., 'fr' for French):")
+        if not lang:
+            st.warning("Please enter a valid language code.")
+
+
+        st.write(f"""\n{trans_text("You are now in chat mode! Type 'exit' to end the chat.", lang)}""")
+        st.write(f'{trans_text("I am Pearl, your personal AI English tutor! Please be specific with questions to enable me to respond accordingly.", lang)}')
         
-        user_input = st.text_input("You:", "")
+        user_input = st.text_input(trans_text("You:", lang), "")
         
         if user_input.lower() == 'exit':
             st.write("Goodbye!")
             st.session_state.chat_history = []  # Clear chat history when exit
         elif user_input:
-            # Append user input and bot response to chat history
-            st.session_state.chat_history.append(f"You: {user_input}")
-            bot_response = get_response(user_input)  # Your chatbot logic here
-            st.session_state.chat_history.append(f"Bot: {bot_response.content}")
-        
-    # Display chat history
+            bot_response = get_response(user_input, lang)  # Your chatbot logic here
+
+
+    # Only display the most recent user input and bot response
     for message in st.session_state.chat_history:
         st.write(message)
 
 if __name__ == "__main__":
     main()
+

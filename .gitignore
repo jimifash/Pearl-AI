@@ -1,0 +1,6 @@
+.env
+chat_history/
+persistent_doc/
+test.py
+Pearl/
+*.pyc

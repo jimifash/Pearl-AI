@@ -6,7 +6,8 @@ from pdf_embed import collection
 from dotenv import load_dotenv
 import uuid
 import os
-
+import streamlit as st
+from language_codes import LANGUAGES
 
 
 
@@ -50,12 +51,15 @@ MAX_MEMORY_SIZE = 100 #limit for storage to prevent overload
 def store(user_input, bot_response):
     """Store chat history and manage memory size."""
     documents = [user_input, bot_response]
+    if not documents or not all(isinstance(doc, str) for doc in documents):  ## Error handling
+        raise ValueError("Documents must be a non-empty list of strings.")
     embedding2 = model.encode(documents)
     ids = [generate_id(user_input), generate_id(bot_response)]
 
     # Remove oldest entries if the memory size exceeds the limit
-    if len(collection2.get()['ids']) >= MAX_MEMORY_SIZE:
-        collection2.delete(ids=[collection2.get()['ids'][0]])  # Remove the oldest record
+    history = collection2.get()
+    if history and 'ids' in history and len(history['ids']) >= MAX_MEMORY_SIZE:
+        collection2.delete(ids=[history['ids'][0]]) # Remove the oldest record
 
 
     #stores the documents in the Chat history collection 
@@ -68,7 +72,7 @@ def store(user_input, bot_response):
 
 
 
-def Retrieve(query):
+'''def Retrieve(query):
     """Retrieves chat history from Chromadb"""
     query_embedding = model.encode(query)
     results = collection2.query(query_embeddings = query_embedding, n_results = 1)
@@ -78,7 +82,9 @@ def Retrieve(query):
             # Return the first matching document
             return results["documents"][0]
     else:
-        return None
+        return None'''
+
+
 
 
 
@@ -95,31 +101,69 @@ def Retrieve_pdf(query):
 
 
 
-
-def get_response(user_input):
+def get_response(user_input, lang):
     """Generate bot response and use ChromaDB for context if available."""
-    # Try to retrieve a relevant past conversation from the database
-    relevant_response = Retrieve(user_input)
-    relevant_response2 = Retrieve_pdf(user_input)
-    #print(relevant_response2)
 
-    if relevant_response:
+    # Initialize chat history if not already present
+    '''if 'chat_history' not in st.session_state:
+        st.session_state.chat_history = []'''
+
+    # Optional: Retrieve past context or response from ChromaDB
+    # relevant_response = Retrieve(user_input)  
+    relevant_response2 = Retrieve_pdf(user_input)  # Example of retrieving from PDF
+
+    # Build context from chat history if available
+    if st.session_state.chat_history:
+        MAX_MESSAGE_LENGTH = 500  # Limit each message length in context
+        context = collection2.get()
+        context = context[:10000] + "..." if len(context) > 10000 else context  # Limit total context size
+
+
         messages = [
-            ("system", f"You are Pearl, a friendly and engaging English tutor who corrects grammatical errors and help improve english of its students. Do not introduce yourself again. Ensure to correct mistakes. Simply continue the conversation based on the user's input. Correct mistakes in grammar, lexis, and sentence structure when necessary. Keep the conversation flowing naturally while offering the corrections. The user’s previous response is there to maintain the flow, but do not repeat it. Use insights from previous messages to guide the conversation and provide relevant corrections. If the user says 'explain' without specifying what to explain, use {relevant_response} to provide an answer. This is what we discussed earlier: {relevant_response}"),
-            ("human", f"User: {user_input}\n Here's what we discussed earlier: {relevant_response}")
+            ("system", (
+            "You are Pearl, a friendly and engaging {0} speaker and English tutor who speaks with the user in their preferred language, {0}."
+            "You are a friendly and engaging English tutor who corrects grammatical errors and help improve english of its students. Do not introduce yourself again. Ensure to correct mistakes.. "
+            "Your goal is to help the user improve their English by responding in {0}, but always providing clear corrections and explanations in English. "
+            "Simply continue the conversation based on the user's input. Correct mistakes in grammar, lexis, and sentence structure when necessary. "
+            "Do not refer to past mistakes unless they are made immediately. Use insights from previous messages to guide the conversation and provide relevant corrections."
+            "When the user makes mistakes in English, gently correct them and explain the correction in {0}, so they understand why the change was made. "
+            "For example, if the user says 'My llamo Jimi' (which is incorrect in English), you should say, 'Actually, in English, it should be \"My name is Jimi.\" "
+            "In English, we say \"My name is\" instead of using 'llamo', which is a Spanish structure. So, the correct way is 'My name is Jimi'. Keep up the good work!' "
+            "Always encourage the user and keep the conversation flowing naturally, so they feel supported and confident in their learning. "
+            "If the user asks for explanations (like 'explain' or '¿puedes explicar?'), provide context and corrections in {0}, making sure they understand the English structure."
+            "You use the history: {1}, to understand the flow of the conversation."
+            "Never forget to immediately address a grammatical error, Never!"
+            ).format(LANGUAGES.get(lang), context)),
+            ("human", f"User: {user_input}")
+
+
         ]
     else:
         messages = [
-            ("system", f"Your name is Pearl. You a friendly and engaging English tutor. Correct mistakes when necessary, and keep the conversation flowing naturally.  Start the conversation by introducing yourself but avoid introducing yourself more than once."),
+            ("system", (
+                "You are Pearl, a friendly and engaging English tutor. Correct mistakes when necessary, and keep the conversation "
+                "flowing naturally. Start the conversation by introducing yourself but avoid introducing yourself more than once."
+                "Never forget to immediately address a grammatical error, Never!"
+            )),
             ("human", f"User: {user_input}")
+
         ]
 
-
     try:
-      response = client.invoke(messages)
-    #stores chat history
-      store(user_input, str(response))
+        # Invoke the chatbot client
+        response = client.invoke(messages)
 
-      return response
+        # Store chat history for context
+        st.session_state.chat_history.append(f"You: {user_input}")
+        st.session_state.chat_history.append(f"Pearl: {response.content}")
+
+
+        # Optionally store the conversation externally
+        store(user_input, str(response))
+
+        return response
     except Exception as e:
-        return f"Error: {str(e)}"
+        # Log the error and return a friendly error message
+        import logging
+        logging.error(f"Error invoking chatbot: {e}")
+        return f"Sorry, I couldn't process your request due to an error: {str(e)}"
