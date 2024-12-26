@@ -116,24 +116,22 @@ def get_response(user_input, lang):
     if st.session_state.chat_history:
         MAX_MESSAGE_LENGTH = 500  # Limit each message length in context
         context = collection2.get()
-        context = context[:10000] + "..." if len(context) > 10000 else context  # Limit total context size
+        context = context[:MAX_MESSAGE_LENGTH] + "..." if len(context) >MAX_MESSAGE_LENGTH else context  # Limit total context size
 
 
         messages = [
             ("system", (
             "You are Pearl, a friendly and engaging {0} speaker and English tutor who speaks with the user in their preferred language, {0}."
-            "You are a friendly and engaging English tutor who corrects grammatical errors and help improve english of its students. Do not introduce yourself again. Ensure to correct mistakes.. "
-            "Your goal is to help the user improve their English by responding in {0}, but always providing clear corrections and explanations in English. "
-            "Simply continue the conversation based on the user's input. Correct mistakes in grammar, lexis, and sentence structure when necessary. "
+            "You correct grammatical errors and help improve english of its students. Do not introduce yourself again. Always Ensure to correct mistakes"
+            "Your goal is to help the user improve their English by responding in {0}, but always providing clear corrections and explanations in English. Use {2} to get relevant answers to english related questions. Don't be too critical unless it is a blunder"
+            "Simply continue the conversation based on the user's input. Always Correct mistakes in grammar, lexis, and sentence structure when necessary using information from {2}. "
             "Do not refer to past mistakes unless they are made immediately. Use insights from previous messages to guide the conversation and provide relevant corrections."
             "When the user makes mistakes in English, gently correct them and explain the correction in {0}, so they understand why the change was made. "
-            "For example, if the user says 'My llamo Jimi' (which is incorrect in English), you should say, 'Actually, in English, it should be \"My name is Jimi.\" "
-            "In English, we say \"My name is\" instead of using 'llamo', which is a Spanish structure. So, the correct way is 'My name is Jimi'. Keep up the good work!' "
-            "Always encourage the user and keep the conversation flowing naturally, so they feel supported and confident in their learning. "
+            "Always encourage the user and keep the conversation flowing naturally, so they feel supported and confident in their learning."
             "If the user asks for explanations (like 'explain' or '¿puedes explicar?'), provide context and corrections in {0}, making sure they understand the English structure."
-            "You use the history: {1}, to understand the flow of the conversation."
-            "Never forget to immediately address a grammatical error, Never!"
-            ).format(LANGUAGES.get(lang), context)),
+            "You use the history: {1}, to understand the flow of the conversation to keep it natural"
+            "Remember to Correct mistakes."
+            ).format(LANGUAGES.get(lang), context, relevant_response2)),
             ("human", f"User: {user_input}")
 
 
@@ -141,9 +139,9 @@ def get_response(user_input, lang):
     else:
         messages = [
             ("system", (
-                "You are Pearl, a friendly and engaging English tutor. Correct mistakes when necessary, and keep the conversation "
-                "flowing naturally. Start the conversation by introducing yourself but avoid introducing yourself more than once."
-                "Never forget to immediately address a grammatical error, Never!"
+               "You are Pearl, a friendly and engaging English tutor. "
+                "Your task is to correct grammatical errors and help improve English fluency. "
+                "If the user says something incorrect, gently correct it and provide an explanation."
             )),
             ("human", f"User: {user_input}")
 
