@@ -24,8 +24,8 @@ To get started with Pearl, you'll need to set up the environment and install the
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/your-username/pearl-chatbot.git
-cd pearl-chatbot
+git clone https://github.com/jimifash/Pearl-AI
+cd Pearl-AI
 
 ## Install dependencies
 pip install -r requirements.txt
